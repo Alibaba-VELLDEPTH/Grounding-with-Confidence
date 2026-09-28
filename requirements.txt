@@ -1,0 +1,12 @@
+# Matches the pinned TimeLens2 GRPO inference environment at upstream f828dde.
+accelerate==1.6.0
+numpy==2.1.2
+qwen-vl-utils[decord]==0.0.14
+safetensors==0.5.3
+torch==2.6.0
+torchvision==0.21.0
+transformers==4.57.1
+
+peft==0.17.1
+decord==0.6.0
+av==14.2.0

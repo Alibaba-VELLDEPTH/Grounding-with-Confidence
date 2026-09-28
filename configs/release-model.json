@@ -1,0 +1,44 @@
+{
+  "format_version": 1,
+  "model_name": "Grounding-with-Confidence-4B",
+  "base_model": "MCG-NJU/TimeLens2-4B",
+  "base_model_revision": "ddbb6cb944f13ce21e59e85da23c5f356107260e",
+  "step": 200,
+  "checkpoint_marker_sha256": "24f30278545ad7359597fb1a68f7912818a6f0ea20d08db39708b752c1cf699b",
+  "model_files": {
+    "added_tokens.json": "c0284b582e14987fbd3d5a2cb2bd139084371ed9acbae488829a1c900833c680",
+    "chat_template.jinja": "3636d0f0bd6bef02654cdffdc447b79cb2cef8ab02cc75267345946291a489e4",
+    "config.json": "6e1ccd900c0908bebd7215ec29f3b577a57c6c6904c1c3dc587b9b1c603368c2",
+    "generation_config.json": "3ff2e83a0510cccccc85c8c96c7df4207985c098b526d798bc2bc68e50bb1a41",
+    "merges.txt": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5",
+    "model-00001-of-00003.safetensors": "4cf28ff4cf63b1b62bc93369de6bf1fcf9d6e089ff7d7c2fea1f4f5bf39108c9",
+    "model-00002-of-00003.safetensors": "ac468ace11eb674b72f415d49abd3def9cee04df0d5c9dba32ae91ae6ca890d4",
+    "model-00003-of-00003.safetensors": "7da46069668382c60c3a65d8fcb3d81e2ca3ca419e14de5617c61af2d318f6df",
+    "model.safetensors.index.json": "5d1f48a7a88e67140e393b14a4d255902a58f1e50bbc8664a8f8d9d9d20d7d19",
+    "preprocessor_config.json": "e8090898ad9d1235c6d671b90b01f2d8803722f280d65e5ef77372ad53f8e03f",
+    "special_tokens_map.json": "76862e765266b85aa9459767e33cbaf13970f327a0e88d1c65846c2ddd3a1ecd",
+    "tokenizer.json": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+    "tokenizer_config.json": "36725cd34b38ac8ce1d0cd4d5df2c7ba7710446150c6d75bc098206ac6425eb1",
+    "video_preprocessor_config.json": "d2619da89e3660a41a656b2a57fa7a60f2845c3e4ac37f010e6672a567cf2800",
+    "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+  },
+  "head": {
+    "weights": "span-confidence-head.safetensors",
+    "config": "span-head-config.json",
+    "sha256": "a62ee7b92e7f3a61f92279527c1b2ca58a16641dd9df3191d92c1b543528202a",
+    "updates": 150
+  },
+  "video_contract": {
+    "fps": 2.0,
+    "min_pixels": 2048,
+    "total_pixels": 8388608
+  },
+  "max_new_tokens": 512,
+  "context_tokens": 16384,
+  "candidate_limits": {
+    "max_unique": 32,
+    "duplicate_patience": 3,
+    "max_total": 40
+  },
+  "nms_iou": 0.3
+}
