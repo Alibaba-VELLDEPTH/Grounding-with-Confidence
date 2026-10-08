@@ -12,6 +12,10 @@ tags:
 
 Model card draft for **Grounding with Confidence: Controllable Generative Video
 Temporal Grounding**. The public Hugging Face repository has not been created yet.
+The [Hugging Face link](https://huggingface.co/) currently points to the homepage;
+weights are not yet available from this placeholder.
+
+Paper: [arXiv:2609.39883](https://arxiv.org/pdf/2609.39883).
 
 Given a video and a text query, the model generates candidate time intervals and
 scores them using a lightweight head over decoder states from the same decoding
@@ -43,10 +47,14 @@ at 10% and 25% global return budgets, respectively.
 Confidence selects among generated candidates. It cannot recover an occurrence
 absent from the candidate pool or a candidate already suppressed by NMS. Scores
 do not establish probability calibration or precision-target transfer to new
-datasets. Training code and training data are coming soon.
+datasets. Training code is provided separately in the code repository; original
+training videos and offline teacher labels are not bundled with these weights.
 
 ## Release metadata
 
-Hosting account, public model ID, paper link, and license metadata will be filled
-in before publication. This file is a draft, not a claim that weights are already
-available.
+Hosting account, public model ID, and license metadata will be filled in before
+weight publication. This file is a draft, not a claim that weights are already
+available. `LICENSE-TIMELENS2.txt` retains the pinned upstream source notice,
+including academic-only and geographic restrictions. Review the base model's
+own terms and obtain derivative redistribution approval; no unrestricted
+MIT/Apache license for these weights is implied.

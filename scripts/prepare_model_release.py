@@ -28,6 +28,7 @@ def main():
     parser.add_argument("--model-dir", type=Path, required=True)
     parser.add_argument("--head-dir", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--check-only", action="store_true", help="Verify sources without copying weights")
     args = parser.parse_args()
     if args.output_dir.exists():
         parser.error("output-dir already exists; choose a new directory")
@@ -56,6 +57,10 @@ def main():
         "online_head": {"updates": release["head"]["updates"],
                         "head_sha256": release["head"]["sha256"]},
     })
+    if args.check_only:
+        print(json.dumps({"status": "source_checks_passed", "generator_step": release["step"],
+                          "head_updates": release["head"]["updates"], "files_copied": 0}))
+        return
     args.output_dir.mkdir(parents=True)
     for name in release["model_files"]:
         source, target = args.model_dir / name, args.output_dir / name
@@ -71,7 +76,12 @@ def main():
     release["head"]["config_sha256"] = sha256_file(config_path)
     (args.output_dir / "release.json").write_text(json.dumps(release, indent=2) + "\n")
     shutil.copy2(ROOT / "docs/model-card.md", args.output_dir / "README.md")
+    shutil.copy2(ROOT / "licenses/TimeLens2.txt", args.output_dir / "LICENSE-TIMELENS2.txt")
     (args.output_dir / ".gitattributes").write_text("*.safetensors filter=lfs diff=lfs merge=lfs -text\n")
+    (args.output_dir / "MANIFEST.sha256").write_text("".join(
+        f"{sha256_file(path)}  {path.name}\n" for path in sorted(args.output_dir.iterdir())
+        if path.is_file()
+    ))
     print(f"Prepared model files in {args.output_dir}; hosting metadata remains to be finalized.")
 
 

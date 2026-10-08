@@ -6,13 +6,15 @@
 
 **Generate once. Rank, select, or reject.**
 
-[Overview](#overview) · [Results](#results) · [Models](#models) · [Quick Start](#quick-start) · [Evaluation](#evaluation)
+[Overview](#overview) · [Results](#results) · [Models](#models) · [Quick Start](#quick-start) · [Evaluation](#evaluation) · [Training](#training-and-data)
 
 </div>
 
 Official implementation of **Grounding with Confidence: Controllable Generative Video Temporal Grounding**.
 
-> **Training code and data are coming soon.** Model weights will be released on Hugging Face. Inference and evaluation code are included in this repository.
+[Read the paper on arXiv (2609.39883)](https://arxiv.org/pdf/2609.39883).
+
+> Inference, evaluation, and training code are included. Hugging Face weights are pending upload; original training videos and offline verifier labels are not bundled. Public-wrapper GPU validation and license approval remain [release gates](docs/release.md).
 
 ## Overview
 
@@ -45,9 +47,9 @@ The return budget is shared across queries; each selector returns the same total
 
 | Model | Base model | Hugging Face |
 | --- | --- | --- |
-| Grounding-with-Confidence-4B | [TimeLens2-4B](https://huggingface.co/MCG-NJU/TimeLens2-4B) | Coming soon |
+| Grounding-with-Confidence-4B | [TimeLens2-4B](https://huggingface.co/MCG-NJU/TimeLens2-4B) | [Hugging Face homepage — weights coming soon](https://huggingface.co/) |
 
-The checkpoint includes the grounding generator and its matched confidence head. See [model details](models/README.md).
+The checkpoint includes the grounding generator and its matched confidence head. See [model details](models/README.md). The Hugging Face link is a homepage placeholder, not a model download.
 
 ## Quick Start
 
@@ -78,9 +80,10 @@ See the [inference guide](docs/inference.md) for input formats, decoding setting
 
 ## Evaluation
 
-Evaluate saved candidates at a fixed confidence threshold:
+Evaluate saved candidates at a fixed confidence threshold (CPU, no model needed):
 
 ```bash
+python -m pip install -r requirements-eval.txt
 python scripts/evaluate.py \
   --input examples/predictions.jsonl \
   --threshold 0.5
@@ -88,10 +91,64 @@ python scripts/evaluate.py \
 
 The included synthetic example runs on CPU. For benchmark evaluation, provide predictions with ground-truth intervals. The evaluator reports query-macro precision, recall, and tF1 at multiple IoU thresholds, together with count accuracy, temporal overlap, and EtF1. See the [evaluation guide](docs/inference.md#evaluate-saved-predictions-cpu) for metric definitions.
 
+To run inference and evaluation together, include `gt_intervals` in every request:
+
+```bash
+python scripts/infer.py \
+  --model /path/to/downloaded-model \
+  --input /path/to/benchmark-requests.jsonl \
+  --output-dir outputs/benchmark --threshold 0.5 --evaluate
+```
+
+This writes `predictions.jsonl` and `evaluation.json`, retaining failed queries in the denominator. Add `--check-only` for input/artifact validation without loading a GPU model. For saved predictions, `evaluate.py --requests` checks the full original query set; it never tunes the threshold on evaluation labels.
+
 ## Training and Data
 
-Training code, training data, and data preparation tools are **coming soon**.
+See [the training workflow](training/README.md) for SFT → RL → inference/evaluation.
+
+| Entry | Purpose |
+| --- | --- |
+| `scripts/prepare_sft.py` | Build checksum-verified v1.3 targets/manifests from authentic caller-supplied replay and verifier soft labels |
+| `scripts/train_sft.py` | LoRA generator SFT and detached span-confidence head training |
+| `scripts/merge_sft.py` | Merge the matched SFT adapter into the pinned base for RL |
+| `scripts/prepare_rl.py` | Convert caller-supplied train/monitor requests to RL Parquet |
+| `scripts/train_rl.py` | Preview or execute the three-phase, eight-GPU RL recipe |
+| `scripts/export_rl.py` | Export trusted self-produced distributed checkpoints for inference |
+| `scripts/infer.py --sft-checkpoint ... --evaluate` | Evaluate a locally trained SFT adapter and matching head without merging |
+
+Use **separate environments** for SFT/inference (`requirements.txt`, Torch 2.6) and RL (`requirements-rl.txt`, Torch 2.8). Detailed schemas, dependencies and commands are in the [SFT guide](training/SFT.md), [RL guide](training/RL.md), and [data guide](data/README.md). These are code paths for supplied data, not a claim that the unpublished original dataset or exact paper weights can be reconstructed from raw videos alone.
+
+CPU checks:
+
+```bash
+python -m pip install -r requirements-dev.txt
+python -m unittest discover -s tests -v
+```
+
+## Licensing and release status
+
+Hosting links and the project/model license will be finalized before publication. Do not infer an unrestricted MIT/Apache license: the pinned TimeLens2 source includes academic-only and geographic restrictions. See [third-party notices](THIRD_PARTY_NOTICES.md) and the [release checklist](docs/release.md). Models and datasets retain their upstream terms.
+
+## Project page
+
+The static [project page](index.html) combines the paper's figures, an illustrative
+threshold control, equal-budget comparisons, and code examples. No build step,
+external font, analytics service, or runtime dependency is required.
+
+Preview from the repository root:
+
+```bash
+python -m http.server 8797 --bind 127.0.0.1
+```
+
+Open `http://127.0.0.1:8797/`. To publish after the release checks, configure
+GitHub Pages to deploy from your chosen branch's **root** directory. Keep
+`index.html`, `.nojekyll`, and `assets/` together; all resource paths are relative
+and support a project-site subdirectory. The linked guides also require the
+existing `docs/`, `training/`, `models/`, and README files. This preparation does
+not enable Pages or push a deployment. Public GitHub/HF links can be added once
+hosting IDs are confirmed; the page currently links the local code guides.
 
 ## Acknowledgements
 
-Our implementation builds on [TimeLens2](https://github.com/MCG-NJU/TimeLens2) and [Hugging Face Transformers](https://github.com/huggingface/transformers). We thank their authors for sharing these tools and models.
+Our implementation builds on [TimeLens2](https://github.com/MCG-NJU/TimeLens2), OMTG's vendored verl, and [Hugging Face Transformers](https://github.com/huggingface/transformers). We thank their authors for sharing these tools and models.

@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f8f3">
+  <meta name="description" content="Grounding with Confidence: controllable generative video temporal grounding. Generate candidate intervals once, then rank, select, or reject with same-pass confidence.">
+  <meta property="og:title" content="Grounding with Confidence">
+  <meta property="og:description" content="One video. One generation. More control over what comes back.">
+  <meta property="og:type" content="website">
+  <title>Grounding with Confidence · Research Project</title>
+  <link rel="icon" href="assets/site/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/site.css">
+  <script src="assets/site.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="nav-shell">
+      <a class="brand" href="#top" aria-label="Grounding with Confidence home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Grounding<span class="brand-light"> with Confidence</span></span></a>
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="navigation">Menu <span aria-hidden="true">+</span></button>
+      <nav id="navigation" aria-label="Main navigation">
+        <a href="#idea">The idea</a><a href="#results">Results</a><a href="#method">Method</a><a href="#examples">Examples</a><a class="nav-code" href="#code">Explore the code <span aria-hidden="true">↗</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero wrap" id="top" aria-labelledby="hero-title">
+      <div class="eyebrow hero-eyebrow"><span class="status-dot" aria-hidden="true"></span> A RESEARCH PROJECT IN VIDEO UNDERSTANDING</div>
+      <h1 id="hero-title">Grounding with<br><em>Confidence.</em><span class="title-star" aria-hidden="true"><svg viewBox="0 0 50 50" width="0.8em" height="0.8em" fill="none"><path d="M25 2v46M2 25h46M9 9l32 32M9 41 41 9" stroke="currentColor" stroke-width="2"/></svg></span></h1>
+      <p class="hero-subtitle">Controllable Generative Video Temporal Grounding</p>
+      <p class="hero-description">Finding a moment is only half the story.<br>Learn which moments to <strong>return</strong> — and when to return nothing.</p>
+      <div class="hero-actions">
+        <a class="button button-dark" href="https://arxiv.org/pdf/2609.39883" target="_blank" rel="noopener"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 2.5h7l3 3v12H5zM12 2.5v4h3M7.5 10h5M7.5 13h5" stroke="currentColor" stroke-width="1.4"/></svg>Read the paper <span class="button-meta">PDF</span></a>
+        <a class="button button-outline" href="#code"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m6 5-5 5 5 5m8-10 5 5-5 5M12 3 8 17" stroke="currentColor" stroke-width="1.4"/></svg>Code &amp; reproduction</a>
+        <a class="pending-label" href="https://huggingface.co/" target="_blank" rel="noopener" aria-label="Hugging Face homepage; model weights coming soon"><span class="small-dot" aria-hidden="true"></span>HF · Weights coming soon</a>
+      </div>
+      <div class="hero-bottom-label"><span>ONE DECODE. MANY DECISIONS.</span><a href="#idea" aria-label="Explore the interactive idea">SCROLL TO EXPLORE <span aria-hidden="true">↓</span></a></div>
+    </section>
+
+    <section class="idea-section" id="idea" aria-labelledby="idea-title">
+      <div class="wrap">
+        <div class="section-heading compact-heading">
+          <div><p class="eyebrow">01 / THE IDEA</p><h2 id="idea-title">Same candidates.<br><em>Your acceptance rule.</em></h2></div>
+          <p>Generate a candidate pool and score every interval in the original decoding pass. Adjust the threshold, not the model.</p>
+        </div>
+        <div class="demo-card">
+          <div class="demo-workspace">
+            <div class="demo-topline"><span class="micro-label">A SINGLE GROUNDING PASS</span><span class="demo-tag">Illustrative example</span></div>
+            <div class="query-line"><span>QUERY</span><q>A person opens the car door.</q></div>
+            <div class="filmstrip"><img src="assets/site/door-sequence.png" width="344" height="68" alt="Four successive frames of a car door opening, cropped from the paper's method illustration."><div class="filmstrip-label"><span aria-hidden="true">▷</span> VIDEO + TEXT → CANDIDATES + SCORES</div></div>
+            <div class="timeline-head"><span>POST-NMS INTERVAL</span><span>CONFIDENCE</span></div>
+            <div class="candidate-row" data-score="0.92" data-interval="[2.0, 4.0]"><span class="candidate-name">I<sub>1</sub></span><div class="timeline-track"><span class="interval" style="--start:12.5%;--length:12.5%"><span>2–4 s</span></span></div><span class="candidate-score">0.92</span><span class="candidate-state">Keep</span></div>
+            <div class="candidate-row" data-score="0.68" data-interval="[8.0, 10.0]"><span class="candidate-name">I<sub>2</sub></span><div class="timeline-track"><span class="interval" style="--start:50%;--length:12.5%"><span>8–10 s</span></span></div><span class="candidate-score">0.68</span><span class="candidate-state">Keep</span></div>
+            <div class="candidate-row is-dropped" data-score="0.31" data-interval="[12.0, 14.0]"><span class="candidate-name">I<sub>3</sub></span><div class="timeline-track"><span class="interval" style="--start:75%;--length:12.5%"><span>12–14 s</span></span></div><span class="candidate-score">0.31</span><span class="candidate-state">Drop</span></div>
+            <div class="timeline-axis"><span>0</span><span>4</span><span>8</span><span>12</span><span>16 s</span></div>
+            <p class="demo-footnote">Generation-order NMS happens first. Confidence never reorders NMS.</p>
+          </div>
+          <div class="demo-controller">
+            <div class="control-header"><span class="micro-label">YOU CHOOSE THE CUTOFF</span><svg width="34" height="34" viewBox="0 0 34 34" fill="none" aria-hidden="true"><path d="M5 9h24M5 17h24M5 25h24" stroke="currentColor"/><circle cx="12" cy="9" r="3" fill="var(--accent-soft)" stroke="currentColor"/><circle cx="23" cy="17" r="3" fill="var(--accent-soft)" stroke="currentColor"/><circle cx="15" cy="25" r="3" fill="var(--accent-soft)" stroke="currentColor"/></svg></div>
+            <label class="threshold-label" for="threshold">Confidence threshold <span>τ</span></label>
+            <output class="threshold-number" id="threshold-value" for="threshold">0.50</output>
+            <input id="threshold" type="range" min="0" max="1" step="0.01" value="0.5" aria-describedby="threshold-help" aria-valuetext="0.50, retaining 2 intervals">
+            <div class="range-labels"><span>Keep more</span><span>Be selective</span></div>
+            <div class="preset-buttons" aria-label="Threshold presets"><button type="button" data-threshold="0" aria-pressed="false">All</button><button type="button" data-threshold="0.5" aria-pressed="true">Balanced</button><button type="button" data-threshold="0.8" aria-pressed="false">Selective</button><button type="button" data-threshold="0.95" aria-pressed="false">Reject</button></div>
+            <div class="selected-output"><div><span class="micro-label">RETURNED SET</span><span class="selected-count" id="selected-count">2 / 3 intervals</span></div><code id="selected-json" aria-live="polite">[[2.0, 4.0], [8.0, 10.0]]</code><p id="selection-message">Two intervals retained. No new decoding.</p></div>
+            <p class="control-note" id="threshold-help">Drag to explore the mechanism. Values are schematic, not live model predictions or a calibrated deployment threshold.</p>
+          </div>
+        </div>
+        <div class="principles"><article><span class="principle-index">01</span><h3>Rank alternatives</h3><p>Prefer a useful clip over the first interval the model happens to generate.</p></article><article><span class="principle-index">02</span><h3>Select an occurrence set</h3><p>Keep several plausible events while removing weaker candidates.</p></article><article><span class="principle-index">03</span><h3>Know when to abstain</h3><p>Allow an empty result when no candidate passes the acceptance rule.</p></article></div>
+      </div>
+    </section>
+
+    <section class="results-section wrap section-space" id="results" aria-labelledby="results-title">
+      <div class="section-heading"><div><p class="eyebrow">02 / THE EVIDENCE</p><h2 id="results-title">Better selection.<br><em>Not more generation.</em></h2></div><p>When the return budget is tight, choosing the right candidates matters most. Compare selectors on exactly the same candidate pool.</p></div>
+      <div class="results-layout">
+        <aside class="result-story"><span class="micro-label">AT A 10% GLOBAL RETURN BUDGET</span><div class="big-result">+4.47<span>pp</span></div><p>Recall@0.5 over generation order, using confidence from the same decoding pass.</p><div class="dataset-facts"><div><strong>320</strong><span>evaluation queries</span></div><div><strong>1,314</strong><span>fixed post-NMS candidates</span></div></div><p class="fineprint">OMTG-Bench · Official query-macro recall. A global budget is shared across queries, not allocated independently per query.</p></aside>
+        <div class="budget-chart">
+          <div class="chart-top"><div><span class="micro-label">EQUAL BUDGET COMPARISON</span><h3>Which moments make the cut?</h3></div><span class="chart-unit">Recall@0.5 (%)</span></div>
+          <div class="budget-picker"><span>Return budget</span><div role="group" aria-label="Global return budget"><button type="button" data-budget="10" aria-pressed="true">10%</button><button type="button" data-budget="25" aria-pressed="false">25%</button><button type="button" data-budget="50" aria-pressed="false">50%</button><button type="button" data-budget="75" aria-pressed="false">75%</button></div></div>
+          <div class="bar-chart" role="img" aria-label="At 10% budget: generation order 9.95%, token likelihood 9.41%, external verifier 11.00%, our confidence 14.42%.">
+            <div class="bar-row" data-series="0"><span class="bar-name">Generation order</span><div class="bar-track"><span class="bar-fill" style="--bar:13.2667%"></span></div><span class="bar-value">9.95</span></div>
+            <div class="bar-row" data-series="1"><span class="bar-name">Token likelihood</span><div class="bar-track"><span class="bar-fill" style="--bar:12.5467%"></span></div><span class="bar-value">9.41</span></div>
+            <div class="bar-row" data-series="2"><span class="bar-name">External verifier</span><div class="bar-track"><span class="bar-fill" style="--bar:14.6667%"></span></div><span class="bar-value">11.00</span></div>
+            <div class="bar-row ours" data-series="3"><span class="bar-name">Confidence <span>ours</span></span><div class="bar-track"><span class="bar-fill" style="--bar:19.2267%"></span></div><span class="bar-value">14.42</span></div>
+            <div class="bar-axis"><span>0</span><span>25</span><span>50</span><span>75%</span></div>
+          </div>
+          <p class="chart-insight" aria-live="polite"><span aria-hidden="true">↗</span> <span id="budget-insight">+4.47 percentage points over generation order at a 10% budget.</span></p>
+          <details class="data-details"><summary>View all reported values <span aria-hidden="true">+</span></summary><div class="table-scroll"><table><caption>Official query-macro Recall@0.5 (%)</caption><thead><tr><th scope="col">Budget</th><th scope="col">Order</th><th scope="col">Likelihood</th><th scope="col">Verifier</th><th scope="col">Ours</th></tr></thead><tbody><tr><th scope="row">10%</th><td>9.95</td><td>9.41</td><td>11.00</td><td>14.42</td></tr><tr><th scope="row">25%</th><td>26.48</td><td>22.37</td><td>26.31</td><td>31.12</td></tr><tr><th scope="row">50%</th><td>51.34</td><td>43.05</td><td>47.72</td><td>52.82</td></tr><tr><th scope="row">75%</th><td>64.76</td><td>61.00</td><td>62.45</td><td>65.30</td></tr></tbody></table></div></details>
+        </div>
+      </div>
+      <figure class="paper-figure evidence-figure"><div class="figure-heading"><span class="micro-label">FROM THE PAPER</span><button type="button" class="zoom-button" data-zoom="assets/site/selection-results.png" data-caption="Precision–recall control and synthetic matched/unmatched-query results. Stars are test-selected operating points, not independent calibration." aria-label="Expand precision–recall results figure">View full size <span aria-hidden="true">↗</span></button></div><img src="assets/site/selection-results.png" width="2000" height="964" loading="lazy" alt="Precision–recall curves for SFT and RL, and localization F1 versus false-alarm rate on synthetic matched and unmatched queries."><figcaption><span>Beyond one operating point.</span> Thresholds expose a precision–recall trade-off and support rejection. Stars denote test-F1-optimal diagnostics; the rejection setup uses synthetic cross-video mismatches.</figcaption></figure>
+    </section>
+
+    <section class="method-section section-space" id="method" aria-labelledby="method-title"><div class="wrap">
+      <div class="section-heading"><div><p class="eyebrow">03 / UNDER THE HOOD</p><h2 id="method-title">A small head.<br><em>A different kind of control.</em></h2></div><p>No additional confidence tokens. No inference-time verifier. A lightweight head reads the decoder states already produced for each interval.</p></div>
+      <div class="method-steps"><article><span class="step-dot">1</span><h3>Generate &amp; represent</h3><p>One autoregressive pass generates intervals. Pool the consumed-token states for each candidate.</p><span class="step-detail">SHARED VISION–LANGUAGE BACKBONE</span></article><article><span class="step-dot">2</span><h3>Learn what to accept</h3><p>Train a detached confidence head with offline soft labels, then online overlap supervision.</p><span class="step-detail">LAYERNORM + 2-LAYER MLP</span></article><article><span class="step-dot">3</span><h3>Apply your rule</h3><p>Run generation-order NMS, then threshold confidence. The same pool supports different returned sets.</p><span class="step-detail">NO ADDITIONAL DECODING</span></article></div>
+      <figure class="paper-figure method-figure"><div class="figure-heading"><span class="micro-label">THE COMPLETE FRAMEWORK</span><button type="button" class="zoom-button" data-zoom="assets/method_overview.png" data-caption="The paper's full framework: generator SFT, detached offline and online head supervision, set-level RL, then generation-order NMS and confidence selection." aria-label="Expand method overview figure">Inspect the architecture <span aria-hidden="true">↗</span></button></div><img src="assets/method_overview.png" width="1448" height="990" loading="lazy" alt="Full method diagram showing shared autoregressive generation, span pooling, detached LayerNorm-MLP confidence head, offline soft BCE and ranking, online BCE, and set-level RL."><figcaption><span>Separate generation from acceptance.</span> Generator SFT and set-level RL improve the pool; confidence supervision learns to score its members without sending head gradients into the generator.</figcaption></figure>
+      <div class="method-specs"><span><strong>4B</strong> TimeLens2 backbone</span><span><strong>2 fps</strong> OMTG input</span><span><strong>16K</strong> context</span><span><strong>512</strong> output tokens</span><span><strong>0.3</strong> NMS tIoU</span></div>
+    </div></section>
+
+    <section class="examples-section wrap section-space" id="examples" aria-labelledby="examples-title">
+      <div class="section-heading"><div><p class="eyebrow">04 / SEE THE DECISIONS</p><h2 id="examples-title">Not every plausible moment<br><em>deserves to be returned.</em></h2></div><p>Real examples from the paper illustrate three uses of interval confidence. Explore the decisions, not just the timestamps.</p></div>
+      <div class="example-layout">
+        <div class="example-sidebar"><div class="example-tabs" role="tablist" aria-label="Qualitative examples" aria-orientation="vertical"><button type="button" role="tab" aria-selected="true" aria-controls="example-rank" id="tab-rank" data-example="rank"><span class="example-number">01</span><span><strong>Rank</strong><small>Find a better existing clip</small></span><span aria-hidden="true">↗</span></button><button type="button" role="tab" aria-selected="false" aria-controls="example-select" id="tab-select" data-example="select" tabindex="-1"><span class="example-number">02</span><span><strong>Select</strong><small>Keep a useful occurrence set</small></span><span aria-hidden="true">↗</span></button><button type="button" role="tab" aria-selected="false" aria-controls="example-reject" id="tab-reject" data-example="reject" tabindex="-1"><span class="example-number">03</span><span><strong>Reject</strong><small>Return nothing when appropriate</small></span><span aria-hidden="true">↗</span></button></div><div class="case-context"><span class="micro-label">A NOTE ON THESE CASES</span><p>These selected successful examples use an <strong>earlier RL variant</strong>, not the final model behind the quantitative results above.</p><p>Case thresholds are historical test-oracle settings. They illustrate mechanisms, not threshold transfer.</p></div></div>
+        <div class="example-panels">
+          <figure id="example-rank" role="tabpanel" aria-labelledby="tab-rank" class="paper-figure case-figure"><div class="figure-heading"><span class="micro-label">RANK EXISTING ALTERNATIVES</span><button class="zoom-button" type="button" data-zoom="assets/site/ranking-cases.png" data-caption="Historical earlier-RL examples: select a later washing event or an existing interval with tighter boundaries." aria-label="Expand ranking examples">Expand <span aria-hidden="true">↗</span></button></div><img src="assets/site/ranking-cases.png" width="1200" height="1354" loading="lazy" alt="Two Charades examples: confidence selects the cup washing event and a tighter bottle-cap interval instead of the first candidate."><figcaption>Confidence can choose a better <em>existing</em> candidate. It does not edit boundaries or generate a new clip.</figcaption></figure>
+          <figure id="example-select" role="tabpanel" aria-labelledby="tab-select" class="paper-figure case-figure" hidden><div class="figure-heading"><span class="micro-label">FILTER AN OCCURRENCE SET</span><button class="zoom-button" type="button" data-zoom="assets/site/selection-cases.png" data-caption="Historical earlier-RL examples: remove weak post-NMS intervals while retaining multiple matching events. The threshold is that variant's test-oracle setting." aria-label="Expand occurrence selection examples">Expand <span aria-hidden="true">↗</span></button></div><img src="assets/site/selection-cases.png" width="1200" height="1366" loading="lazy" alt="Two OMTG examples: keep two standing events or four exercise events and drop a misplaced candidate."><figcaption>A returned set need not be a single clip. All NMS survivors are shown; confidence filters weaker intervals.</figcaption></figure>
+          <figure id="example-reject" role="tabpanel" aria-labelledby="tab-reject" class="paper-figure case-figure" hidden><div class="figure-heading"><span class="micro-label">ACCEPT OR RETURN NO RESULT</span><button class="zoom-button" type="button" data-zoom="assets/site/rejection-cases.png" data-caption="Historical earlier-RL examples: matched queries are accepted and synthetic cross-video mismatches rejected. One global test-oracle threshold per benchmark." aria-label="Expand query rejection examples">Expand <span aria-hidden="true">↗</span></button></div><img src="assets/site/rejection-cases.png" width="1200" height="1398" loading="lazy" alt="Matched shelf-tidying and sunbathing-seal queries are accepted, while synthetic mismatched queries have low-confidence candidates and return an empty set."><figcaption>The option to return <code>[]</code> matters. Here, unmatched labels come from synthetic cross-video query swaps.</figcaption></figure>
+        </div>
+      </div>
+      <div class="limitations"><div><span class="eyebrow">WHAT CONFIDENCE CANNOT DO</span><h3>Selection is not a substitute<br>for finding the event.</h3></div><div><p>A selector cannot recover a missing candidate or reverse an NMS suppression. Most of the full-system F1 gain comes from NMS; the additional confidence gain after NMS is not statistically established.</p><details><summary>Read the evaluation boundaries <span aria-hidden="true">+</span></summary><p>The final model's incremental tF1@0.5 gain after NMS is +0.32 points, with a 95% source-video bootstrap interval of [−0.14, 0.76]. Manuscript checkpoint and test-selected threshold results are disclosed retrospective diagnostics. Scores do not establish probability calibration; tested precision targets did not transfer reliably. Synthetic rejection results do not establish general open-world rejection.</p></details></div></div>
+    </section>
+
+    <section class="code-section section-space" id="code" aria-labelledby="code-title"><div class="wrap">
+      <div class="section-heading"><div><p class="eyebrow">05 / MAKE IT REPRODUCIBLE</p><h2 id="code-title">From an idea<br><em>to a working pipeline.</em></h2></div><p>Training, inference, and evaluation in one codebase. Local inputs, explicit model–head pairing, and a fixed evaluation rule.</p></div>
+      <div class="code-layout"><div class="code-info"><span class="code-status"><span class="status-dot" aria-hidden="true"></span> SOURCE CODE PREPARED</span><h3>Start with a saved prediction.<br>Then bring your own video.</h3><p>The CPU evaluator is the smallest entry point. GPU inference uses the merged generator and its matched confidence head. SFT and RL have separate environments.</p><div class="resource-links"><a href="README.md">Repository README <span aria-hidden="true">↗</span></a><a href="docs/inference.md">Inference &amp; evaluation guide <span aria-hidden="true">↗</span></a><a href="training/README.md">Complete training workflow <span aria-hidden="true">↗</span></a><a href="models/README.md">Model release information <span aria-hidden="true">↗</span></a></div><p class="code-disclaimer">Weights await Hugging Face upload. Original training videos, offline labels, and split manifests are not bundled. GPU acceptance and license approval remain release gates.</p></div>
+        <div class="terminal"><div class="terminal-top"><div class="terminal-dots" aria-hidden="true"><i></i><i></i><i></i></div><span>grounding-with-confidence</span><span class="terminal-lang">BASH</span></div><div class="code-tabs" role="tablist" aria-label="Quick-start commands"><button type="button" role="tab" id="code-tab-eval" aria-selected="true" aria-controls="code-eval" data-code="eval">Evaluate</button><button type="button" role="tab" id="code-tab-infer" aria-selected="false" aria-controls="code-infer" data-code="infer" tabindex="-1">Infer</button><button type="button" role="tab" id="code-tab-train" aria-selected="false" aria-controls="code-train" data-code="train" tabindex="-1">Train</button></div>
+          <div id="code-eval" class="code-panel" role="tabpanel" aria-labelledby="code-tab-eval"><pre><code><span class="code-comment"># No model or GPU required</span>
+python -m pip install -r requirements-eval.txt
+
+<span class="code-comment"># Fixed threshold; never fitted on eval labels</span>
+python scripts/evaluate.py \
+  --input examples/predictions.jsonl \
+  --threshold 0.5 \
+  --metric-protocol omtg</code></pre><div class="code-panel-note">Outputs query-macro metrics. Failed queries stay in the denominator.</div></div>
+          <div id="code-infer" class="code-panel" role="tabpanel" aria-labelledby="code-tab-infer" hidden><pre><code><span class="code-comment"># CUDA environment; matching model + head</span>
+python -m pip install -e .
+python -m pip install -r requirements.txt
+
+<span class="code-comment"># Your request rows must include GT for --evaluate</span>
+python scripts/infer.py \
+  --model /path/to/model-release \
+  --input /path/to/requests.jsonl \
+  --output-dir outputs/demo \
+  --threshold 0.5 --evaluate</code></pre><div class="code-panel-note">Writes predictions.jsonl + evaluation.json. Use a validation-selected threshold.</div></div>
+          <div id="code-train" class="code-panel" role="tabpanel" aria-labelledby="code-tab-train" hidden><pre><code><span class="code-comment"># Prepare authentic inputs using training/SFT.md</span>
+<span class="code-comment"># Set MANIFEST and MANIFEST_SHA to your prepared data</span>
+torchrun --standalone --nproc_per_node=8 \
+  scripts/train_sft.py \
+  --input-manifest "$MANIFEST" \
+  --expected-manifest-sha256 "$MANIFEST_SHA" \
+  --output-dir outputs/sft \
+  --run-mode joint-only --lambda-conf 0.25
+
+<span class="code-comment"># Three-phase RL: see training/RL.md</span>
+python scripts/train_rl.py --help</code></pre><div class="code-panel-note">Caller-owned data required. The RL launcher previews by default; --execute trains.</div></div>
+          <div class="terminal-bottom"><span><span aria-hidden="true">$</span> Run from the repository root</span><button id="copy-code" type="button">Copy command <svg viewBox="0 0 16 16" width="14" height="14" fill="none" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="1" stroke="currentColor"/><path d="M11 3V2H2v9h1" stroke="currentColor"/></svg></button></div><span class="sr-only" id="copy-status" role="status"></span>
+        </div>
+      </div>
+    </div></section>
+
+    <section class="closing wrap"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><p>Ground the moment.<br><em>Make the return count.</em></p><a class="button button-dark" href="https://arxiv.org/pdf/2609.39883" target="_blank" rel="noopener">Read the full paper <span aria-hidden="true">↗</span></a></section>
+  </main>
+  <footer class="site-footer wrap"><div><strong>Grounding with Confidence</strong><p>Controllable Generative Video Temporal Grounding</p></div><div class="footer-links"><a href="THIRD_PARTY_NOTICES.md">Attribution &amp; terms</a><a href="docs/release.md">Release status</a><a href="#top">Back to top ↑</a></div><p class="footer-note">Built on TimeLens2 and OMTG's verl integration. Research code and upstream models retain their respective terms; no unrestricted model license is implied.</p></footer>
+  <dialog id="figure-dialog" aria-labelledby="dialog-title"><div class="dialog-toolbar"><h2 id="dialog-title">Figure detail</h2><button type="button" id="close-figure" aria-label="Close expanded figure">Close <span aria-hidden="true">×</span></button></div><div class="dialog-image-wrap"><img id="dialog-image" alt=""></div><p id="dialog-caption"></p></dialog>
+  <noscript><div class="noscript-note">Interactive controls require JavaScript. All reported numbers are available in the results table, and all figures and commands are in the linked paper and repository guides.</div></noscript>
+</body>
+</html>

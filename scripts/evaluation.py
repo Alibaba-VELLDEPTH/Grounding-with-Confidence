@@ -90,3 +90,57 @@ def set_metrics(prediction: Sequence[Sequence[float]], ground_truth: Sequence[Se
         f1s.append(f1)
     output["etf1"] = output["count_accuracy"] * statistics.fmean(f1s)
     return output
+
+
+def omtg_metrics(prediction, ground_truth):
+    from scipy.optimize import linear_sum_assignment
+
+    predictions = [list(map(float, pair)) for pair in prediction]
+    targets = [list(map(float, pair)) for pair in ground_truth]
+    union_overlap = float(set_tiou(prediction, ground_truth))
+    legacy_overlap = official_multispan_iou(prediction, ground_truth)
+
+    def merge(segments):
+        ordered = sorted(segments, key=lambda pair: pair[0])
+        if not ordered:
+            return []
+        merged = [ordered[0]]
+        for start, end in ordered[1:]:
+            if start <= merged[-1][1]:
+                merged[-1][1] = max(merged[-1][1], end)
+            else:
+                merged.append([start, end])
+        return merged
+
+    # Upstream merge aliases the first interval before matching; preserve it on private copies.
+    merged_predictions, merged_targets = merge(predictions), merge(targets)
+    intersection = sum(max(0, min(pe, ge) - max(ps, gs))
+                       for ps, pe in merged_predictions for gs, ge in merged_targets)
+    union = (sum(end - start for start, end in merged_predictions)
+             + sum(end - start for start, end in merged_targets) - intersection)
+    overlap = intersection / union if union > 0 else 0.0
+    result = {"predicted_count": float(len(predictions)),
+              "absolute_count_error": float(abs(len(predictions) - len(targets))),
+              "count_accuracy": float(len(predictions) == len(targets)),
+              "tiou": overlap, "set_tiou": union_overlap, "miou": legacy_overlap}
+    if not predictions or not targets:
+        value = float(not predictions and not targets)
+        for tag in ("03", "05", "07"):
+            for metric in ("precision", "recall", "f1"):
+                result[f"occurrence_{metric}_{tag}"] = value
+        result["etf1"] = value
+        return result
+    matrix = [[single_span_iou(pred, gt) for gt in targets] for pred in predictions]
+    left, right = linear_sum_assignment([[-value for value in row] for row in matrix])
+    matched = [matrix[i][j] for i, j in zip(left, right)]
+    f1s = []
+    for threshold in THRESHOLDS:
+        count = sum(value >= threshold for value in matched)
+        precision, recall = count / len(predictions), count / len(targets)
+        f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
+        tag = str(threshold).replace(".", "")
+        result.update({f"occurrence_precision_{tag}": precision,
+                       f"occurrence_recall_{tag}": recall, f"occurrence_f1_{tag}": f1})
+        f1s.append(f1)
+    result["etf1"] = result["count_accuracy"] * statistics.fmean(f1s)
+    return result

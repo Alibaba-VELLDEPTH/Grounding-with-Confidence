@@ -1,0 +1,3 @@
+-r requirements-eval.txt
+tokenizers==0.22.1
+pyarrow==20.0.0
