@@ -139,26 +139,6 @@ python -m unittest discover -s tests -v
 
 Hosting links and the project/model license will be finalized before publication. Do not infer an unrestricted MIT/Apache license: the pinned TimeLens2 source includes academic-only and geographic restrictions. See [third-party notices](THIRD_PARTY_NOTICES.md) and the [release checklist](docs/release.md). Models and datasets retain their upstream terms.
 
-## Project page
-
-The static [project page](index.html) combines the paper's figures, an illustrative
-threshold control, equal-budget comparisons, and code examples. No build step,
-external font, analytics service, or runtime dependency is required.
-
-Preview from the repository root:
-
-```bash
-python -m http.server 8797 --bind 127.0.0.1
-```
-
-Open `http://127.0.0.1:8797/`. To publish after the release checks, configure
-GitHub Pages to deploy from your chosen branch's **root** directory. Keep
-`index.html`, `.nojekyll`, and `assets/` together; all resource paths are relative
-and support a project-site subdirectory. The linked guides also require the
-existing `docs/`, `training/`, `models/`, and README files. This preparation does
-not enable Pages or push a deployment. Public GitHub/HF links can be added once
-hosting IDs are confirmed; the page currently links the local code guides.
-
 ## Acknowledgements
 
 We thank the authors of [TimeLens2](https://github.com/MCG-NJU/TimeLens2) and
