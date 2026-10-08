@@ -1,10 +1,18 @@
 # Local RL workflow
 
-This is executable training code, not a GPU reproduction report. No original
-train/monitor/calibration/test split files, videos, teacher scores, or results are
-provided. Supply data you own and keep calibration/test videos out of **both** RL
-splits. The monitoring reward uses its own batch GT and is not a held-out test
-metric or a deployable calibrated threshold.
+Public training videos and annotations are available from
+[OMTG-56K](https://huggingface.co/datasets/insomnia7/omtg56k) (including its RL
+subset) and [TimeLens2-93K](https://huggingface.co/datasets/MCG-NJU/TimeLens2-93K).
+See the [data guide](../data/README.md) for downloads and upstream credits.
+Normalize annotations into the request JSONL schema below, then use
+`scripts/prepare_rl.py` to convert them into our train/monitor Parquet format;
+raw upstream annotation formats are not parsed automatically.
+
+This is executable training code, not a GPU reproduction report. Paper-specific
+train/monitor/calibration/test split files, videos, teacher scores, and results
+are not bundled. Use data under its original terms and keep calibration/test
+videos out of **both** RL splits. The monitoring reward uses its own batch GT
+and is not a held-out test metric or a deployable calibrated threshold.
 
 ## Environment
 

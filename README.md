@@ -104,6 +104,16 @@ This writes `predictions.jsonl` and `evaluation.json`, retaining failed queries 
 
 ## Training and Data
 
+Download the public training data from the official Hugging Face repositories:
+
+- **TimeLens2:** [TimeLens2-93K](https://huggingface.co/datasets/MCG-NJU/TimeLens2-93K).
+- **OMTG:** [OMTG-56K](https://huggingface.co/datasets/insomnia7/omtg56k), with SFT and RL subsets.
+
+After downloading the videos and annotations, normalize the annotations into the
+[documented input schemas](data/README.md#conversion-to-our-training-formats),
+then use our preparation scripts to convert them into our SFT manifests and RL
+Parquet format. Confidence SFT additionally requires offline candidate replay
+and verifier-v2 soft scores; these are not supplied by the two upstream datasets.
 See [the training workflow](training/README.md) for SFT → RL → inference/evaluation.
 
 | Entry | Purpose |
@@ -116,7 +126,7 @@ See [the training workflow](training/README.md) for SFT → RL → inference/eva
 | `scripts/export_rl.py` | Export trusted self-produced distributed checkpoints for inference |
 | `scripts/infer.py --sft-checkpoint ... --evaluate` | Evaluate a locally trained SFT adapter and matching head without merging |
 
-Use **separate environments** for SFT/inference (`requirements.txt`, Torch 2.6) and RL (`requirements-rl.txt`, Torch 2.8). Detailed schemas, dependencies and commands are in the [SFT guide](training/SFT.md), [RL guide](training/RL.md), and [data guide](data/README.md). These are code paths for supplied data, not a claim that the unpublished original dataset or exact paper weights can be reconstructed from raw videos alone.
+Use **separate environments** for SFT/inference (`requirements.txt`, Torch 2.6) and RL (`requirements-rl.txt`, Torch 2.8). Detailed schemas, dependencies and commands are in the [SFT guide](training/SFT.md), [RL guide](training/RL.md), and [data guide](data/README.md). Paper-specific replay, verifier scores, and split manifests are not bundled; downloading the public datasets alone does not reproduce the exact paper weights.
 
 CPU checks:
 
@@ -151,4 +161,13 @@ hosting IDs are confirmed; the page currently links the local code guides.
 
 ## Acknowledgements
 
-Our implementation builds on [TimeLens2](https://github.com/MCG-NJU/TimeLens2), OMTG's vendored verl, and [Hugging Face Transformers](https://github.com/huggingface/transformers). We thank their authors for sharing these tools and models.
+We thank the authors of [TimeLens2](https://github.com/MCG-NJU/TimeLens2) and
+[OMTG](https://github.com/Tangent0308/OMTG) for releasing their code and training
+datasets: [TimeLens2-93K](https://huggingface.co/datasets/MCG-NJU/TimeLens2-93K)
+and [OMTG-56K](https://huggingface.co/datasets/insomnia7/omtg56k). Their resources
+provide essential foundations for this work. Please also credit and cite these
+upstream projects when using their data or code.
+
+Our implementation additionally builds on OMTG's vendored verl and
+[Hugging Face Transformers](https://github.com/huggingface/transformers); we thank
+these communities for their open research infrastructure.

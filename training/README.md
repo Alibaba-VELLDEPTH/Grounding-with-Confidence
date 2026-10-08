@@ -1,9 +1,17 @@
 # Training → inference → evaluation
 
-The supplied workflows implement the reported method on caller-supplied data.
-They do not include the original videos, offline verifier labels, or dataset
-split manifests, and are not a claim of exact end-to-end paper reproduction.
-Use separate Python environments for SFT/inference and RL.
+Obtain public training data from [TimeLens2-93K](https://huggingface.co/datasets/MCG-NJU/TimeLens2-93K)
+and [OMTG-56K](https://huggingface.co/datasets/insomnia7/omtg56k). Follow the
+[data download and conversion guide](../data/README.md) to normalize their
+annotations, then use `scripts/prepare_sft.py` and `scripts/prepare_rl.py` to
+convert prepared inputs into our training formats. We thank the TimeLens2 and
+OMTG authors for releasing these datasets and their training code.
+
+Confidence SFT also requires actual offline candidate replay and verifier-v2
+soft labels. These and the paper-specific split manifests are not bundled or
+reconstructed from the upstream downloads alone, so this workflow is not a claim
+of exact end-to-end paper reproduction. Use separate Python environments for
+SFT/inference and RL.
 
 ## 1. SFT: generator and detached confidence head
 

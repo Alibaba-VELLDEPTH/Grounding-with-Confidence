@@ -1,11 +1,19 @@
 # SFT: v1.3 soft verifier confidence
 
-This is an executable preparation/training path for **caller-owned data**, not an
-end-to-end reproduction of the paper dataset. The original normalized training
-units, offline candidate replay, and verifier-v2 score files are not distributed.
-You must obtain or construct these from data you are authorized to use, keeping
-training videos separate from calibration/evaluation videos. The preparer does
-not index datasets, run the verifier, or certify split separation.
+Start with authorized public training videos and annotations from
+[TimeLens2-93K](https://huggingface.co/datasets/MCG-NJU/TimeLens2-93K) and
+[OMTG-56K](https://huggingface.co/datasets/insomnia7/omtg56k); see the
+[data guide](../data/README.md) for download instructions and upstream credits.
+Normalize their annotations into the units schema below, then supply actual
+offline candidate replay and verifier-v2 soft scores. `scripts/prepare_sft.py`
+converts these inputs into our SFT targets and training manifest.
+
+The paper's normalized units, candidate replay, and verifier-v2 score files are
+not distributed here. Upstream GT annotations alone do not supply confidence
+supervision. Keep training videos separate from calibration/evaluation videos;
+the preparer does not parse raw upstream annotations, generate replay, run the
+verifier, or certify split separation. This is a preparation/training path for
+authorized caller-supplied inputs, not exact reproduction of the paper dataset.
 
 The final reported SFT configuration is **v1.3 soft confidence**, with 60,405
 units, 49,766 source videos, 582,900 unique teacher candidates, and **1,888
