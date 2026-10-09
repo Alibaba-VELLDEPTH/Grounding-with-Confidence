@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="260" viewBox="0 0 1000 260" role="img" aria-labelledby="title desc">
+  <title id="title">Grounding with Confidence</title>
+  <desc id="desc">A deep-green wordmark with a schematic of temporal intervals and confidence indicators. Decorative illustration, not model predictions.</desc>
+  <rect x="1" y="1" width="998" height="258" rx="20" fill="#163d34" stroke="#49685d" stroke-width="2"/>
+  <path d="M652 1v258" stroke="#49685d" stroke-opacity=".55"/>
+  <text x="48" y="48" fill="#c3d4c6" font-family="Arial, Helvetica, sans-serif" font-size="12" letter-spacing="2.5">ONE DECODE. MANY DECISIONS.</text>
+  <text x="45" y="112" fill="#f8f5e9" font-family="Arial, Helvetica, sans-serif" font-size="53" font-weight="600" letter-spacing="-1.8">Grounding with</text>
+  <text x="44" y="193" fill="#d1e3ab" font-family="Georgia, 'Times New Roman', serif" font-size="78" font-style="italic" letter-spacing="-2">Confidence.</text>
+  <path d="M49 220h46" stroke="#d1e3ab" stroke-width="3"/>
+  <g fill="none" stroke="#78978a" stroke-width="1.5">
+    <path d="M707 70h204M707 123h204M707 176h204" stroke-dasharray="3 7"/>
+    <path d="M702 48h-13v152h13M935 48h13v152h-13"/>
+  </g>
+  <rect x="724" y="58" width="103" height="24" rx="6" fill="#d1e3ab"/>
+  <rect x="782" y="111" width="117" height="24" rx="6" fill="#91b89e"/>
+  <rect x="749" y="164" width="65" height="24" rx="6" fill="#284b41" stroke="#78978a" stroke-width="1.5"/>
+  <g fill="#f8f5e9">
+    <circle cx="923" cy="70" r="5"/>
+    <circle cx="923" cy="123" r="5"/>
+  </g>
+  <circle cx="923" cy="176" r="5" fill="none" stroke="#78978a" stroke-width="1.5"/>
+  <text x="819" y="223" fill="#c3d4c6" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" letter-spacing="1.8">RANK · SELECT · REJECT</text>
+</svg>

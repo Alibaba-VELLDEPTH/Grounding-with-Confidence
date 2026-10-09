@@ -1,18 +1,22 @@
 <div align="center">
 
-# Grounding with Confidence
+<h1><img src="assets/readme-header.svg" width="1000" alt="Grounding with Confidence"></h1>
 
 ### Controllable Generative Video Temporal Grounding
 
 **Generate once. Rank, select, or reject.**
 
-[Overview](#overview) · [Results](#results) · [Models](#models) · [Quick Start](#quick-start) · [Evaluation](#evaluation) · [Training](#training-and-data)
+<p>
+  <a href="https://arxiv.org/pdf/2609.39883"><img src="assets/readme-paper.svg" width="192" height="34" alt="Paper — arXiv:2609.39883"></a>
+  <a href="https://huggingface.co/"><img src="assets/readme-hf.svg" width="174" height="34" alt="Hugging Face homepage — weights coming soon, not a model download"></a>
+  <a href="training/README.md"><img src="assets/readme-training.svg" width="166" height="34" alt="Training and Data — preparation and training guides"></a>
+</p>
+
+[Overview](#overview) · [Results](#results) · [Models](#models) · [Quick Start](#quick-start) · [Evaluation](#evaluation) · [Training](#training-and-data) · [Citation](#citation)
 
 </div>
 
 Official implementation of **Grounding with Confidence: Controllable Generative Video Temporal Grounding**.
-
-[Read the paper on arXiv (2609.39883)](https://arxiv.org/pdf/2609.39883).
 
 > Inference, evaluation, and training code are included. Hugging Face weights are pending upload; original training videos and offline verifier labels are not bundled. Public-wrapper GPU validation and license approval remain [release gates](docs/release.md).
 
@@ -135,10 +139,6 @@ python -m pip install -r requirements-dev.txt
 python -m unittest discover -s tests -v
 ```
 
-## Licensing and release status
-
-Hosting links and the project/model license will be finalized before publication. Do not infer an unrestricted MIT/Apache license: the pinned TimeLens2 source includes academic-only and geographic restrictions. See [third-party notices](THIRD_PARTY_NOTICES.md) and the [release checklist](docs/release.md). Models and datasets retain their upstream terms.
-
 ## Acknowledgements
 
 We thank the authors of [TimeLens2](https://github.com/MCG-NJU/TimeLens2) and
@@ -151,3 +151,16 @@ upstream projects when using their data or code.
 Our implementation additionally builds on OMTG's vendored verl and
 [Hugging Face Transformers](https://github.com/huggingface/transformers); we thank
 these communities for their open research infrastructure.
+
+## Citation
+
+If you find this work useful, please cite:
+
+```bibtex
+@article{chen2026grounding,
+  title={Grounding with Confidence: Controllable Generative Video Temporal Grounding},
+  author={Chen, Jinhao and Cui, Benlei and Jia, Ruijian and Wang, Ziheng and Wo, Tianyu and Sun, Pengfei and Huang, Longtao and Xue, Hui and Yang, Yitong and Hong, Haiwen},
+  journal={arXiv preprint arXiv:2609.39883},
+  year={2026}
+}
+```
