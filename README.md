@@ -8,7 +8,7 @@
 
 <p>
   <a href="https://arxiv.org/pdf/2609.39883"><img src="assets/readme-paper.svg" width="192" height="34" alt="Paper — arXiv:2609.39883"></a>
-  <a href="https://huggingface.co/"><img src="assets/readme-hf.svg" width="174" height="34" alt="Hugging Face homepage — weights coming soon, not a model download"></a>
+  <a href="https://huggingface.co/Alibaba-VELLDEPTH/CTVG-4B"><img src="assets/readme-hf.svg" width="174" height="34" alt="Hugging Face — CTVG-4B model weights"></a>
   <a href="training/README.md"><img src="assets/readme-training.svg" width="166" height="34" alt="Training and Data — preparation and training guides"></a>
 </p>
 
@@ -18,7 +18,7 @@
 
 Official implementation of **Grounding with Confidence: Controllable Generative Video Temporal Grounding**.
 
-> Inference, evaluation, and training code are included. Hugging Face weights are pending upload; original training videos and offline verifier labels are not bundled. Public-wrapper GPU validation and license approval remain [release gates](docs/release.md).
+> Inference, evaluation, and training code are included. [CTVG-4B weights](https://huggingface.co/Alibaba-VELLDEPTH/CTVG-4B) are available with the matched confidence head. Original training videos and offline verifier labels are not bundled. See the [release guide](docs/release.md) for validation scope and upstream terms; public-wrapper GPU validation remains pending.
 
 ## Overview
 
@@ -51,9 +51,11 @@ The return budget is shared across queries; each selector returns the same total
 
 | Model | Base model | Hugging Face |
 | --- | --- | --- |
-| Grounding-with-Confidence-4B | [TimeLens2-4B](https://huggingface.co/MCG-NJU/TimeLens2-4B) | [Hugging Face homepage — weights coming soon](https://huggingface.co/) |
+| **CTVG-4B** (Confidence-based TVG) | [TimeLens2-4B](https://huggingface.co/MCG-NJU/TimeLens2-4B) | [Alibaba-VELLDEPTH/CTVG-4B](https://huggingface.co/Alibaba-VELLDEPTH/CTVG-4B) |
 
-The checkpoint includes the grounding generator and its matched confidence head. See [model details](models/README.md). The Hugging Face link is a homepage placeholder, not a model download.
+The release includes the complete merged BF16 generator and its matched confidence head (generator step 200, 150 online head updates), plus tokenizer, processor, and pairing metadata. Download the whole repository; loading the generator alone does not apply confidence scoring. See [model details and download instructions](models/README.md).
+
+Verified release revision: `f732bd4e21fa62e63029374b35a36123bc6f8a11`.
 
 ## Quick Start
 
@@ -68,11 +70,12 @@ python -m pip install -r requirements.txt
 
 ### Inference
 
-Once the weights are available, prepare a JSONL file following [examples/requests.jsonl](examples/requests.jsonl), using your own video path, query, and video duration. Then run:
+Prepare a JSONL file following [examples/requests.jsonl](examples/requests.jsonl), using your own video path, query, and video duration. The command below downloads the pinned HF release automatically; alternatively, pass a complete local release directory to `--model`.
 
 ```bash
 python scripts/infer.py \
-  --model /path/to/downloaded-model \
+  --model Alibaba-VELLDEPTH/CTVG-4B \
+  --revision f732bd4e21fa62e63029374b35a36123bc6f8a11 \
   --input examples/requests.jsonl \
   --output-dir outputs/example \
   --threshold 0.5
@@ -99,7 +102,8 @@ To run inference and evaluation together, include `gt_intervals` in every reques
 
 ```bash
 python scripts/infer.py \
-  --model /path/to/downloaded-model \
+  --model Alibaba-VELLDEPTH/CTVG-4B \
+  --revision f732bd4e21fa62e63029374b35a36123bc6f8a11 \
   --input /path/to/benchmark-requests.jsonl \
   --output-dir outputs/benchmark --threshold 0.5 --evaluate
 ```
